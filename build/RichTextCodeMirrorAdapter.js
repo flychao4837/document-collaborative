@@ -49,11 +49,7 @@
     }
     // codemirror current length
     function codemirrorLength(cm) {
-        var lastLine = cm.lineCount() - 1;
-        return cm.indexFromPos({
-            line: lastLine,
-            ch: cm.getLine(lastLine).length
-        });
+        return cm.TextOpHistroy.charLength;
     }
     var addStyleRule = function () {
         var added = {};
@@ -86,7 +82,6 @@
             this.cm = rtcm.editor;
 
             this.rtcm.on('change', this.onChange, this);
-            this.rtcm.on('attributesChange', this.onAttributesChange, this);
 
             this.cm.$textContainerElem.on('beforeChange', this.trigger.bind(this, 'beforeChange'));
             this.cm.$textContainerElem.on('cursorActivity', this.onCursorActivity.bind(this));
@@ -100,7 +95,6 @@
             key: 'detach',
             value: function detach() {
                 this.rtcm.off('change', this.onChange);
-                this.rtcm.off('attributesChange', this.onAttributesChange);
 
                 this.cm.off('cursorActivity', this.onCursorActivity.bind(this));
                 this.cm.off('focus', this.onFocus.bind(this));
@@ -112,16 +106,8 @@
                 if (changes && Object.keys(changes)) {
                     //origin来源识别，+input时输入，其他还有toobar的变化等等
                     //pair 包含正序的[0]operation 和反序的[1]inverse两部分
-                    var pair = RichTextCodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm);
+                    var pair = RichTextCodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.rtcm);
                     this.trigger('change', pair[0], pair[1]); //跳往EditorClient-onChange
-                }
-            }
-        }, {
-            key: 'onAttributesChange',
-            value: function onAttributesChange(_, changes) {
-                if (changes[0].origin !== 'RTCMADAPTER') {
-                    var pair = RichTextCodeMirrorAdapter.operationFromAttributesChanges(changes, this.cm);
-                    this.trigger('change', pair[0], pair[1]);
                 }
             }
         }, {
@@ -308,21 +294,21 @@
         }, {
             key: 'setOtherCursor',
             value: function setOtherCursor(position, color, clientId) {
-                var cursorPos = this.cm.posFromIndex(position);
-                var cursorCoords = this.cm.cursorCoords(cursorPos);
-                var cursorEl = document.createElement('span');
-                cursorEl.className = 'other-client';
-                cursorEl.style.display = 'inline';
-                cursorEl.style.padding = '0';
-                cursorEl.style.marginLeft = cursorEl.style.marginRight = '-1px';
-                cursorEl.style.borderLeftWidth = '2px';
-                cursorEl.style.borderLeftStyle = 'solid';
-                cursorEl.style.borderLeftColor = color;
-                cursorEl.style.height = cursorCoords.bottom - cursorCoords.top + 'px';
-                cursorEl.style.transform = 'translateY(2px)';
-                cursorEl.style.zIndex = 0;
-                cursorEl.setAttribute('data-clientid', clientId);
-                return this.cm.setBookmark(cursorPos, { widget: cursorEl, insertLeft: true });
+                // var cursorPos = this.cm.posFromIndex(position)
+                // var cursorCoords = this.cm.cursorCoords(cursorPos)
+                // var cursorEl = document.createElement('span')
+                // cursorEl.className = 'other-client'
+                // cursorEl.style.display = 'inline'
+                // cursorEl.style.padding = '0'
+                // cursorEl.style.marginLeft = cursorEl.style.marginRight = '-1px'
+                // cursorEl.style.borderLeftWidth = '2px'
+                // cursorEl.style.borderLeftStyle = 'solid'
+                // cursorEl.style.borderLeftColor = color
+                // cursorEl.style.height = (cursorCoords.bottom - cursorCoords.top) + 'px'
+                // cursorEl.style.transform = 'translateY(2px)'
+                // cursorEl.style.zIndex = 0
+                // cursorEl.setAttribute('data-clientid', clientId)
+                // return this.cm.setBookmark(cursorPos, { widget: cursorEl, insertLeft: true })
             }
         }, {
             key: 'setOtherSelectionRange',
@@ -343,16 +329,6 @@
         }], [{
             key: 'operationFromCodeMirrorChanges',
             value: function operationFromCodeMirrorChanges(changes, cm) {
-                // Approach: Replay the changes, beginning with the most recent one, and
-                // construct the operation and its inverse. We have to convert the position
-                // in the pre-change coordinate system to an index. We have a method to
-                // convert a position in the coordinate system after all changes to an index,
-                // namely CodeMirror's `indexFromPos` method. We can use the information of
-                // a single change object to convert a post-change coordinate system to a
-                // pre-change coordinate system. We can now proceed inductively to get a
-                // pre-change coordinate system for all changes in the linked list.
-                // A disadvantage of this approach is its complexity `O(n^2)` in the length
-                // of the linked list of changes.
                 var docEndLength = codemirrorLength(cm);
                 var operation = new TextOperation().retain(docEndLength);
                 var inverse = new TextOperation().retain(docEndLength);

@@ -46,10 +46,11 @@
 		function TextOperateHistroy(cm) {
 			_classCallCheck(this, TextOperateHistroy);
 
-			this.currentValue = cm.getCleanHtml();
+			this.currentValue = cm.getCleanHtml() || '';
 			this.currentIndex = 0;
 			this.changed = false; //状态机，为true时不做文本变化的判断操作直接返回null
 			this.changeLists = [];
+			this.charLength = this.currentValue.length || 0;
 
 			/*changes参数 [
    {start: start, //开始位置
@@ -110,12 +111,14 @@
 					return null;
 				}
 
+				this.setCurrentValue(newValue);
 				return this.setDelta(newValue, commonStart, commonEnd, removed, inserted, removed.length, newValue.length);
 			}
 		}, {
 			key: 'setCurrentValue',
-			value: function setCurrentValue(newvalue) {
-				this.currentValue = newvalue;
+			value: function setCurrentValue(newValue) {
+				this.currentValue = newValue;
+				this.charLength = newValue.length;
 			}
 		}, {
 			key: 'setDelta',

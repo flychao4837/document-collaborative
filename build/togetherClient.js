@@ -1,16 +1,16 @@
 (function (global, factory) {
 	if (typeof define === "function" && define.amd) {
-		define(['module', './Utils.js', './Constants.js', './RichTextCodeMirror.js', './RichTextCodeMirrorAdapter.js', './ClientSocketIOAdapter.js', './EditorClient.js', './jquery-1.10.2.min.js', './historyOperater.js', 'ws.js'], factory);
+		define(['module', './Utils.js', './Constants.js', './RichTextCodeMirror.js', './RichTextCodeMirrorAdapter.js', './ClientSocketIOAdapter.js', './EditorClient.js', './jquery-1.10.2.min.js', './historyOperater.js'], factory);
 	} else if (typeof exports !== "undefined") {
-		factory(module, require('./Utils.js'), require('./Constants.js'), require('./RichTextCodeMirror.js'), require('./RichTextCodeMirrorAdapter.js'), require('./ClientSocketIOAdapter.js'), require('./EditorClient.js'), require('./jquery-1.10.2.min.js'), require('./historyOperater.js'), require('ws.js'));
+		factory(module, require('./Utils.js'), require('./Constants.js'), require('./RichTextCodeMirror.js'), require('./RichTextCodeMirrorAdapter.js'), require('./ClientSocketIOAdapter.js'), require('./EditorClient.js'), require('./jquery-1.10.2.min.js'), require('./historyOperater.js'));
 	} else {
 		var mod = {
 			exports: {}
 		};
-		factory(mod, global.Utils, global.Constants, global.RichTextCodeMirror, global.RichTextCodeMirrorAdapter, global.ClientSocketIOAdapter, global.EditorClient, global.jquery1102Min, global.historyOperater, global.ws);
+		factory(mod, global.Utils, global.Constants, global.RichTextCodeMirror, global.RichTextCodeMirrorAdapter, global.ClientSocketIOAdapter, global.EditorClient, global.jquery1102Min, global.historyOperater);
 		global.togetherClient = mod.exports;
 	}
-})(this, function (module, Utils, _require, RichTextCodeMirror, RichTextCodeMirrorAdapter, ClientSocketIOAdapter, EditorClient, Jquery, historyOperater, ws) {
+})(this, function (module, Utils, _require, RichTextCodeMirror, RichTextCodeMirrorAdapter, ClientSocketIOAdapter, EditorClient, Jquery, historyOperater) {
 	//togetherClient 用户端入口
 	'use strict';
 
@@ -43,6 +43,8 @@
 
 	module.exports = function () {
 		function togetherClient(editorDomID, url) {
+			var _this2 = this;
+
 			_classCallCheck(this, togetherClient);
 
 			if (!editorDomID) {
@@ -66,18 +68,18 @@
 			this.rtcmAdapter = new RichTextCodeMirrorAdapter(this.rtcm);
 
 			//创建 socket 应该放到 ClientSocketIOAdapter 是否更合适 ???
-			// var socket = window.io(url)
-			// socket.on('doc', (data) => {
-			// 	this.socketIOAdapter = new ClientSocketIOAdapter(socket)
-			// 	this.client = new EditorClient(data, this.socketIOAdapter, this.rtcmAdapter)
-			// 	// 监听实时文本属性变化
-			// 	this.rtcm.on('realtimeTextAttrsChanged', this.trigger.bind(this, 'realtimeTextAttrsChanged'))
-			// 	// 监听实时 canUndo/canRedo 变化
-			// 	this.client.on('undoStatesChanged', this.trigger.bind(this, 'undoStatesChanged'))
-			// 	// 监听协同用户变化
-			// 	this.client.on('clientsChanged', this.trigger.bind(this, 'clientsChanged'))
-			// 	this.trigger('ready')
-			// })
+			var socket = window.io(url);
+			socket.on('doc', function (data) {
+				_this2.socketIOAdapter = new ClientSocketIOAdapter(socket);
+				_this2.client = new EditorClient(data, _this2.socketIOAdapter, _this2.rtcmAdapter);
+				// 监听实时文本属性变化
+				_this2.rtcm.on('realtimeTextAttrsChanged', _this2.trigger.bind(_this2, 'realtimeTextAttrsChanged'));
+				// 监听实时 canUndo/canRedo 变化
+				_this2.client.on('undoStatesChanged', _this2.trigger.bind(_this2, 'undoStatesChanged'));
+				// 监听协同用户变化
+				_this2.client.on('clientsChanged', _this2.trigger.bind(_this2, 'clientsChanged'));
+				_this2.trigger('ready');
+			});
 
 			//页面交互
 			this.bindCustomAct(Jquery);
