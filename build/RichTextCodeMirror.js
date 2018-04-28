@@ -1,16 +1,16 @@
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
-        define(['module', './Utils.js', './EntityManager.js', './Constants.js', './TextOperateHistroy.js', './jquery-1.10.2.min.js'], factory);
+        define(['module', './EntityManager.js', './Constants.js', './TextOperateHistroy.js', './jquery-1.10.2.min.js'], factory);
     } else if (typeof exports !== "undefined") {
-        factory(module, require('./Utils.js'), require('./EntityManager.js'), require('./Constants.js'), require('./TextOperateHistroy.js'), require('./jquery-1.10.2.min.js'));
+        factory(module, require('./EntityManager.js'), require('./Constants.js'), require('./TextOperateHistroy.js'), require('./jquery-1.10.2.min.js'));
     } else {
         var mod = {
             exports: {}
         };
-        factory(mod, global.Utils, global.EntityManager, global.Constants, global.TextOperateHistroy, global.jquery1102Min);
+        factory(mod, global.EntityManager, global.Constants, global.TextOperateHistroy, global.jquery1102Min);
         global.RichTextCodeMirror = mod.exports;
     }
-})(this, function (module, Utils, _require, _require2, TextOperateHistroy, Jquery) {
+})(this, function (module, _require, _require2, TextOperateHistroy, Jquery) {
     'use strict';
 
     function _classCallCheck(instance, Constructor) {
@@ -60,6 +60,7 @@
                 this.onChange(html);
             }.bind(this);
             wangEditor.customConfig.onfocus = function () {
+                //第一次选取编辑器时会与click操作冲突
                 console.log('onfocus');
                 this.onFocus();
             }.bind(this);
@@ -69,12 +70,18 @@
             }.bind(this);
             //生成编辑器
             wangEditor.create();
-            /*填充临时内容--测试用*/
 
+            /*填充临时内容--测试用*/
             var text = '<p>欢迎使用<b>editor</b>富<label class="user-bg-color" style="background-color:#ff4b0c">文本编</label>辑' + '<label class="user-cursor-123" style="font-size:10px;color:blue;display: inline-block;position: relative;"><span>|</span>' + '<span style="position: absolute;top:-10px;color:#999;background-color:#f5f5f5;left: -10px;">agtros</span></label>器啊</p>' + '<p><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_ca79a146.png" style="max-width:100%;"></p><p><br></p>';
 
             wangEditor.txt.html(text);
             this.editor = wangEditor;
+
+            //获取鼠标点击事件
+            this.editor.$textContainerElem.on("click", function () {
+                //TODO--获取鼠标点击事件，和鼠标滑选操作
+                console.log("click");
+            });
 
             //初始化历史记录
             this.TextOpHistroy = new TextOperateHistroy(this);
@@ -103,14 +110,14 @@
                 var txt = this.setDOMElementToStr(htmlElem);
                 var delta = this.TextOpHistroy.getDelta(txt);
                 //当由编辑器focus导致的编辑器active状态变化，从而发起onchange，此时主动取消此次onchange事件
-                if (delta.contents == "" && delta.baseLength === delta.targetLength) {
+                if (!delta || delta.start === delta.end) {
                     return;
                 }
                 if (!this.TextOpHistroy.changed) {
                     ///这里触发自定义的change事件，处理operation，cursor，和本地历史记录相关
                     // {operatios,metadata} 操作步骤和鼠标位置记录
-                    var changeData = this.getEditorChangeInfo();
-                    this.trigger('change', this, changeData);
+                    this.TextOpHistroy.updateOperateHistroy(delta);
+                    this.trigger('change', this, delta);
                 }
             }
         }, {
@@ -121,29 +128,12 @@
             }
         }, {
             key: 'onBlur',
-            value: function onBlur(html) {
-                //TODO--更新，推送鼠标位置信息
-            }
-        }, {
-            key: 'getEditorChangeInfo',
-            value: function getEditorChangeInfo() {
-                //当editor内容发生变化时，触发事件
-                var cm = this.editor;
-                var changes = this.TextOpHistroy.changes;
-                var newChanges = [];
-                var html = this.getCleanHtml();
-                var delta = this.TextOpHistroy.getDelta(html);
-                var operation = {};
-                console.log(delta);
+            value: function onBlur(html) {}
+            //TODO--更新，推送鼠标位置信息
 
-                if (newChanges.length > 0) {
-                    //
-                } else {}
-                return {
-                    operation: operation,
-                    range: range
-                };
-            }
+
+            //获取编辑器内容
+
         }, {
             key: 'getEditorCtx',
             value: function getEditorCtx() {
@@ -301,7 +291,7 @@
                     }
                 }
                 getDeepSize(node);
-                console.log("节点深度", size);
+                //console.log("节点深度", size);
                 return size;
             }
         }, {
@@ -583,7 +573,7 @@
             tmpStr = "",
             deep = 1,
             breakStatus = false;
-        console.log(rootElem);
+        //console.log(rootElem);
         //递归，闭包
         function elemMap(rootElem, limitOpt) {
             var tag = rootElem.nodeName.toLocaleLowerCase();

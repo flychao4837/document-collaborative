@@ -142,7 +142,9 @@
           clients: this.clients,
           // replay the operations on the clients, so the rich text will show correctly
           operations: this.operations
-        }).on('operation', function (revision, operation, selection) {
+        })
+        //服务器收到operation，响应操作
+        .on('operation', function (revision, operation, selection) {
           _this2.mayWrite(socket, function (mayWrite) {
             if (!mayWrite) {
               console.log("User doesn't have the right to edit.");

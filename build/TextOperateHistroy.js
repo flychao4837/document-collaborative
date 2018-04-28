@@ -14,6 +14,8 @@
 	//histroy 记录文本操作历史
 	'use strict';
 
+	//最大历史记录条数，超过后要pop出旧数据，避免数组体积过大
+
 	function _classCallCheck(instance, Constructor) {
 		if (!(instance instanceof Constructor)) {
 			throw new TypeError("Cannot call a class as a function");
@@ -38,6 +40,8 @@
 		};
 	}();
 
+	var MAX_LIST_NUM = 100;
+
 	module.exports = function () {
 		function TextOperateHistroy(cm) {
 			_classCallCheck(this, TextOperateHistroy);
@@ -45,7 +49,8 @@
 			this.currentValue = cm.getCleanHtml();
 			this.currentIndex = 0;
 			this.changed = false; //状态机，为true时不做文本变化的判断操作直接返回null
-			this.changes = [];
+			this.changeLists = [];
+
 			/*changes参数 [
    {start: start, //开始位置
    end: start, //结束位置
@@ -72,13 +77,19 @@
 
 		_createClass(TextOperateHistroy, [{
 			key: 'updateOperateHistroy',
-			value: function updateOperateHistroy(operation, range) {
-				if (operation && range) {
-					this.changes.push(operation);
-					this.range = range;
+			value: function updateOperateHistroy(operation) {
+				if (operation) {
+					this.changeLists.push(operation);
 					++this.versions;
 				} else {
 					console.log('\u5F53\u524D\u64CD\u4F5C\uFF0C\u5B58\u50A8\u7684\u5386\u53F2\u8BB0\u5F55\u53C2\u6570\u4E0D\u5168');
+				}
+			}
+		}, {
+			key: 'updateCursorRange',
+			value: function updateCursorRange(range) {
+				if (range && Object.keys(range)) {
+					this.range = range;
 				}
 			}
 		}, {
@@ -99,7 +110,7 @@
 					return null;
 				}
 
-				return this.setOperate(newValue, commonStart, commonEnd, removed, inserted, removed.length, newValue.length);
+				return this.setDelta(newValue, commonStart, commonEnd, removed, inserted, removed.length, newValue.length);
 			}
 		}, {
 			key: 'setCurrentValue',
@@ -107,8 +118,8 @@
 				this.currentValue = newvalue;
 			}
 		}, {
-			key: 'setOperate',
-			value: function setOperate(str, start, end, removed, inserted, delen, total) {
+			key: 'setDelta',
+			value: function setDelta(str, start, end, removed, inserted, delen, total) {
 				this.currentValue = str;
 				return {
 					start: start + delen,
@@ -122,43 +133,14 @@
 			key: 'getDelta',
 			value: function getDelta(html) {
 				var _this = this;
-				var delta = void 0;
 				//可能的文本变化情况
 				//1：只增加，2：只删除，3：添加的比删除的多（显示为添加操作），
 				//4：添加的比删除的少（显示为删除操作）5：添加删除一样（修改，根据响应按键的情况，若时间太短，可能不会响应）
 				///operateType: 'add' 增加 'delete' 删除，'modify' //修改
-				var operateState = {
-					startOffset: 0,
-					endOffset: 0,
-					contents: '',
-					operateType: '',
-					baseLength: this.currentValue.length,
-					targetLength: html.length
-				};
 				if (this.changed) {
 					return null;
 				}
-				delta = this.textChange(this.currentValue, html);
-				//console.log(delta)
-				if (delta) {
-					operateState.contents = delta.inserted;
-					operateState.operateType = "add";
-					operateState.startOffset = delta.start;
-					operateState.endOffset = delta.end;
-
-					if (delta.delen > 0) {
-						operateState.contents = delta.inserted;
-						operateState.operateType = "modify";
-					} else if (delta.start < delta.delen) {
-						operateState.contents = delta.removed;
-						operateState.operateType = "del";
-					} else {
-						operateState.contents = delta.inserted;
-						operateState.operateType = "add";
-					}
-				}
-				console.log(operateState);
-				return operateState;
+				return this.textChange(this.currentValue, html); //"{"start":27,"end":26,"removed":"啊","inserted":"","delen":1}"
 			}
 		}]);
 
