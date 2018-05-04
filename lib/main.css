@@ -3,3 +3,26 @@
 	margin:0;
 	padding: 0;
 }
+.userCursor{
+    position: absolute;
+    /*transition:all 0.1s linear;*/
+    color:#999;
+    font-weight: 600;
+    line-height: 120% !important;
+    margin: 0 !important;
+    top: 0;
+    left: 0;
+    font-size: 0;
+    width: 2px;
+    border-left: 1px solid #333;
+    height: 22px;
+}
+.hiddeneEditor{
+	width: 40px;
+	height: 20px;
+	overflow: hidden;
+	position: absolute;
+	top:0;
+	left: 20px;
+}
+
