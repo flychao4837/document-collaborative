@@ -14,13 +14,12 @@
     <button id="btn2">cleanHTML</button>
     <button id="btn3">getCurrentRange</button>
     <button id="btn4">setNewRange</button>
-    <p>元素文本字符长度168</p>
+    <!-- <p>元素文本字符长度168</p> -->
     <div class="console"></div>
     
-
+    <!--Common based-->
     <script type="text/javascript" src="/lib/socket.io.js"></script>
     <script type="text/javascript" src="/build/Utils.js"></script>
-
     <script type="text/javascript" src="/build/AnnotationList.js"></script>
     <script type="text/javascript" src="/build/Constants.js"></script>
     <script type="text/javascript" src="/build/TextAction.js"></script>
@@ -36,12 +35,18 @@
     <script type="text/javascript" src="/build/RichTextCodeMirror.js"></script>
     <script type="text/javascript" src="/build/RichTextCodeMirrorAdapter.js"></script>
     <script type="text/javascript" src="/build/EditorClient.js"></script>
-    
-
+    <!--rangy-selection-->
+    <script type="text/javascript" src="/lib/rangy/rangy-core.js"></script>
+    <script type="text/javascript" src="/lib/rangy/rangy-classapplier.js"></script>
+    <script type="text/javascript" src="/lib/rangy/rangy-serializer.js"></script>
+    <script type="text/javascript" src="/lib/rangy/rangy-selectionsaverestore.js"></script>
+    <script type="text/javascript" src="/lib/rangy/rangy-highlighter.js"></script>
+    <script type="text/javascript" src="/lib/rangy/rangy-textrange.js"></script>
+    <!--custom-scripts-->
     <script type="text/javascript" src="/build/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="/editor/wangEditor.js"></script>
-    
     <script type="text/javascript" src="/build/togetherClient.js"></script>
+
     <script type="text/javascript">
         //var tc = new togetherClient("#editor" ,'ws://127.0.0.1:8181') //for websocket
         var tc = new togetherClient("#editor" ,'http://together.tt:4000')//for socket.io
