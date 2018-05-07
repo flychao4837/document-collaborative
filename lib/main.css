@@ -3,28 +3,43 @@
 	margin:0;
 	padding: 0;
 }
-.w-e-text .userCursor{
-    position: absolute;
-    /*transition:all 0.1s linear;*/
-    color:#999;
+.w-e-text .user-cursor{
+    position: relative;
+    transition:all 0.3s linear;
     font-weight: 600;
     line-height: 120% !important;
     margin: 0 !important;
     top: 0;
     left: 0;
-    font-size: 0;
+    font-size: 16px;
     width: 2px;
-    border-left: 1px solid #333;
+    border-left: 2px solid #333;
     height: 22px;
+    animation: blink 1s infinite;
 }
-.w-e-text .hiddeneEditor{
-	width: 40px;
+.w-e-text-container .hiddeneEditor{
+	width: 200px;
 	height: 20px;
 	overflow: hidden;
 	position: absolute;
-	top:0;
+	top:100px;
 	left: 20px;
     visibility: visible;
-    opacity: 0.5;
+    opacity: 0;
+}
+@keyframes blink
+{
+    from {opacity:1;}
+    to {opacity:0.5;}
+}
+@-moz-keyframes blink
+{
+    from {opacity:1;}
+    to {opacity:0.5;}
 }
 
+@-webkit-keyframes blink
+{
+    from {opacity:1;}
+    to {opacity:0.5;}
+}
