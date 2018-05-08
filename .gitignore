@@ -1,3 +1,13 @@
 node_modules/
 build/
-editor/
+editor/docs/
+editor/example/
+editor/fonts/
+editor/node_modules/
+editor/release/
+*.md
+editor/LICENSE
+*.eslintignore
+*.gitattributes
+*.npmignore
+editor/.gitignore
