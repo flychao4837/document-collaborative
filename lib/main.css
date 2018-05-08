@@ -25,7 +25,7 @@
 	top:100px;
 	left: 20px;
     visibility: visible;
-    opacity: 0;
+    opacity: 0.3;
 }
 @keyframes blink
 {
