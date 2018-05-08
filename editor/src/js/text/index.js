@@ -64,7 +64,7 @@ Text.prototype = {
 
     // 清空内容
     clear: function () {
-        this.html('<p><br></p>')
+        this.html('<p>clear<br></p>')
     },
 
     // 获取 设置 html
@@ -174,11 +174,8 @@ Text.prototype = {
         const editor = this.editor
         const $textElem = editor.$textElem
 
-        //临时编辑区
-        const $tempTextarea = editor.$tempTextarea
-
         function insertEmptyP ($selectionElem) {
-            const $p = $('<p><br></p>')
+            const $p = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"><p class="section"><br></p></div>')
             $p.insertBefore($selectionElem)
             editor.selection.createRangeByElem($p, true)
             editor.selection.restoreSelection()
@@ -222,18 +219,16 @@ Text.prototype = {
             if (e.keyCode !== 13) {
                 // 不是回车键
                 return
+            }else{
+                //阻止浏览器默认回车换行行为
+                e.preventDefault()
             }
             // 将回车之后生成的非 <p> 的顶级标签，改为 <p>
             pHandle(e)
         })
 
-        // $tempTextarea.on('keyup', e=>{
-        //     if (e.keyCode === 13) {
-        //         pHandle(e)
-        //     }            
-        // })
-
         // <pre><code></code></pre> 回车时 特殊处理
+        // 插入自定义标签的新段落，用于处理jquery选取段落插入文本行为
         function codeHandle(e) {
             const $selectionElem = editor.selection.getSelectionContainerElem()
             if (!$selectionElem) {
@@ -243,9 +238,18 @@ Text.prototype = {
             const selectionNodeName = $selectionElem.getNodeName()
             const parentNodeName = $parentElem.getNodeName()
 
+            //获取selection所在的根节点 root-elem
+            const originRootElem = $selectionElem.getOriginRootElem()
+
+            //在当前鼠标位置的根节点后插入新段落
+            function insertEmptyPAfter ($selectionRootElem) {
+                const $p = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"><p class="section"><br></p></div>')
+                $p.insertAfter($selectionRootElem)
+                editor.selection.createRangeByElem($p, true)
+                editor.selection.restoreSelection()
+            }
             if (selectionNodeName !== 'CODE' || parentNodeName !== 'PRE') {
-                // 不符合要求 忽略
-                return
+                insertEmptyPAfter(originRootElem)
             }
 
             if (!editor.cmd.queryCommandSupported('insertHTML')) {
@@ -257,7 +261,7 @@ Text.prototype = {
             if (editor._willBreakCode === true) {
                 // 此时可以跳出代码块
                 // 插入 <p> ，并将选取定位到 <p>
-                const $p = $('<p><br></p>')
+                const $p = $('<p>codeHandle<br></p>')
                 $p.insertAfter($parentElem)
                 editor.selection.createRangeByElem($p, true)
                 editor.selection.restoreSelection()
@@ -285,7 +289,6 @@ Text.prototype = {
                 // 记录下来，以便下次回车时候跳出 code
                 editor._willBreakCode = true
             }
-
             // 阻止默认行为
             e.preventDefault()
         }
@@ -296,20 +299,13 @@ Text.prototype = {
                 // 取消即将跳转代码块的记录
                 editor._willBreakCode = false
                 return
+            }else{
+                //阻止浏览器默认回车换行行为
+                e.preventDefault()
             }
             // <pre><code></code></pre> 回车时 特殊处理
             codeHandle(e)
         })
-        // $tempTextarea.on('keydown', e => {
-        //     if (e.keyCode !== 13) {
-        //         // 不是回车键
-        //         // 取消即将跳转代码块的记录
-        //         editor._willBreakCode = false
-        //         return
-        //     }
-        //     // <pre><code></code></pre> 回车时 特殊处理
-        //     codeHandle(e)
-        // })
     },
 
     // 清空时保留 <p><br></p>
@@ -317,29 +313,19 @@ Text.prototype = {
         const editor = this.editor
         const $textElem = editor.$textElem
 
-        $textElem.on('keydown', e => {
-            if (e.keyCode !== 8) {
-                return
-            }
-            const txtHtml = $textElem.html().toLowerCase().trim()
-            if (txtHtml === '<p><br></p>') {
-                // 最后剩下一个空行，就不再删除了
-                e.preventDefault()
-                return
-            }
-        })
-
+        //keyUp和keyDown只判断一次，把文本全部删除，在插入新的容器
         $textElem.on('keyup', e => {
             if (e.keyCode !== 8) {
                 return
             }
             let $p
             const txtHtml = $textElem.html().toLowerCase().trim()
+            const seriaContents = editor._serialContents()
 
             // firefox 时用 txtHtml === '<br>' 判断，其他用 !txtHtml 判断
-            if (!txtHtml || txtHtml === '<br>') {
+            if (!txtHtml || txtHtml === '<br>' || seriaContents.lenght < 1) {
                 // 内容空了
-                $p = $('<p><br/></p>')
+                $p = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"><p class="section"><br></p></div>')
                 $textElem.html('') // 一定要先清空，否则在 firefox 下有问题
                 $textElem.append($p)
                 editor.selection.createRangeByElem($p, false, true)
@@ -510,7 +496,7 @@ Text.prototype = {
 
     },
 
-    // img 点击
+    //TODO-- img 点击
     _imgHandle: function () {
         const editor = this.editor
         const $textElem = editor.$textElem

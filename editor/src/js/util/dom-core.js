@@ -331,13 +331,45 @@ DomElement.prototype = {
         })
     },
 
-    // 是否包含某个子节点
+    // 是否包含某个子节点, 
     isContain: function ($child) {
         const elem = this[0]
         const child = $child[0]
         return elem.contains(child)
     },
 
+    // 取到的是自定义的p.section子节点，父节点是div.root-elem ,但是查找不到祖先节点，在页面层级上却存在包含关系
+    // 点击位置是各种坑
+    hasElement($child){
+        const elem = this[0]
+        const child = $child[0]
+        let parent = this.getParentsNode(child)
+        let result = false
+        if(parent.getAttribute && parent.getAttribute('class') === 'root-elem'){
+            result = true
+        }else{
+            result = elem.contains(child)
+        }
+        return result
+    },
+
+    //修复 isContain的bug，查找子节点直到能找到的最顶层节点，若是包含自定义的class，则默认$textElem包含当前子节点
+    getParentsNode(child){
+        let node = child
+        if(node && node.getAttribute && ['w-e-text','w-e-menu','w-e-toolbar','w-e-text-container'].indexOf(node.getAttribute('class'))>-1){
+            return node
+        }else if(node.parentNode === null || (node && node && node.getAttribute && node.getAttribute('class')==='root-elem')){
+            return node
+        }else{
+            return this.getParentsNode(node.parentNode)
+        }
+    },
+
+    //获取对应的root-elem
+    getOriginRootElem(){
+        let elem = this[0]
+        return this.getParentsNode(elem)
+    },
     // 尺寸数据
     getSizeData: function () {
         const elem = this[0]

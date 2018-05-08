@@ -27,6 +27,8 @@ function Editor(toolbarSelector, textSelector) {
     this.toolbarSelector = toolbarSelector
     this.textSelector = textSelector
 
+    this.rootDomId = rootDomId
+
     // 自定义配置
     this.customConfig = {}
 }
@@ -103,13 +105,8 @@ Editor.prototype = {
         if ($children && $children.length) {
             $textElem.append($children)
         } else {
-            $textElem.append($('<p><br></p>'))
+            $textElem.append($('<div class="root-elem" data-root-id="'+this.rootDomId++ +'"><p class="section"><br></p></div>'))
         }
-        
-        //临时编辑器
-        let $tempTextarea = $('<textarea class="hiddeneEditor"></textarea>')
-        $textContainerElem.append($tempTextarea)
-        this.$tempTextarea = $tempTextarea
 
         // 编辑区域加入DOM
         $textContainerElem.append($textElem)
@@ -150,14 +147,6 @@ Editor.prototype = {
             compositionEnd && this.change &&  this.change()
         })
 
-        //编辑区click事件，把光标移到隐藏的textarea里面
-        $textContainerElem.on('click', () => {
-            let tempRange = this.selection.getRange()
-            if(tempRange.startOffset === tempRange.endOffset){
-                //$tempTextarea.focus()
-            }
-            $tempTextarea[0].value =''
-        })
         $toolbarElem.on('click', function () {
             this.change &&  this.change()
         })
@@ -169,7 +158,7 @@ Editor.prototype = {
             
             $(document).on('click', (e) => {
                 //判断当前点击元素是否在编辑器内
-                const isChild = $textElem.isContain($(e.target))
+                const isChild = $textElem.hasElement($(e.target))
                 
                 //判断当前点击元素是否为工具栏
                 const isToolbar = $toolbarElem.isContain($(e.target))
@@ -229,7 +218,7 @@ Editor.prototype = {
         const $children = $textElem.children()
         if (!$children.length) {
             // 如果编辑器区域无内容，添加一个空行，重新设置选区
-            $textElem.append($('<p><br></p>'))
+            $textElem.append($('<p>initSelection<br></p>'))
             this.initSelection()
             return
         }
@@ -240,9 +229,10 @@ Editor.prototype = {
             // 新增一个空行
             const html = $last.html().toLowerCase()
             const nodeName = $last.getNodeName()
+            //TODO -- 已经插入初始行，这里就不能再插入新行了
             if ((html !== '<br>' && html !== '<br\/>') || nodeName !== 'P') {
-                // 最后一个元素不是 <p><br></p>，添加一个空行，重新设置选区
-                $textElem.append($('<p data-root-id="'+(++id)+'"><br></p>'))
+                // 最后一个元素不是添加的自定义标签，添加一个空行，重新设置选区
+                $textElem.append($('<div class="root-elem" data-root-id="'+this.rootDomId++ +'"><p class="section"><br></p></div>'))
                 this.initSelection()
                 return
             }
@@ -314,6 +304,11 @@ Editor.prototype = {
         
     },
 
+    // 用jquery序列化整个编辑器内容
+    _serialContents(){
+        return window.jquery( this.txt.html() )
+    },
+
     // 创建编辑器
     create: function () {
         // 初始化配置信息
@@ -339,6 +334,9 @@ Editor.prototype = {
 
         // 初始化选区，将光标定位到内容尾部
         this.initSelection(true)
+
+        //用jquery序列化整个编辑器内容
+        this._serialContents()
 
         // 绑定事件
         this._bindEvent()
