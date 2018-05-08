@@ -306,7 +306,7 @@ Editor.prototype = {
 
     // 用jquery序列化整个编辑器内容
     _serialContents(){
-        return window.jquery( this.txt.html() )
+        return window.jquery( this.$textElem ).children()
     },
 
     // 创建编辑器
