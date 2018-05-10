@@ -17,29 +17,12 @@
     height: 22px;
     animation: blink 1s infinite;
 }
-.w-e-text-container .hiddeneEditor{
-	width: 200px;
-	height: 20px;
-	overflow: hidden;
-	position: absolute;
-	top:100px;
-	left: 20px;
-    visibility: visible;
-    opacity: 0.3;
+.w-e-text .root-elem{
+    margin:5px 0;
 }
-@keyframes blink
-{
-    from {opacity:1;}
-    to {opacity:0.5;}
+.w-e-text .root-elem:first-child{
+    margin-top:10px;
 }
-@-moz-keyframes blink
-{
-    from {opacity:1;}
-    to {opacity:0.5;}
-}
-
-@-webkit-keyframes blink
-{
-    from {opacity:1;}
-    to {opacity:0.5;}
+.w-e-text .root-elem .section{
+    margin:0;
 }
