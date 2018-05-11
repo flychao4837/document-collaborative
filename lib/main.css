@@ -17,7 +17,7 @@
     height: 22px;
     animation: blink 1s infinite;
 }
-.w-e-text .root-elem{
+/*.w-e-text .root-elem{
     margin:5px 0;
 }
 .w-e-text .root-elem:first-child{
@@ -25,4 +25,4 @@
 }
 .w-e-text .root-elem .section{
     margin:0;
-}
+}*/

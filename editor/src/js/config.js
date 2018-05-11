@@ -15,17 +15,17 @@ const config = {
         'strikeThrough',
         'foreColor',
         'backColor',
-        'link',
-        'list',
-        'justify',
-        'quote',
-        'emoticon',
-        'image',
-        'table',
-        'video',
-        'code',
-        'undo',
-        'redo'
+        //'link',
+        //'list',
+        //'justify',
+        //'quote',
+        //'emoticon',
+        //'image',
+        //'table',
+        //'video',
+        //'code',
+        //'undo',
+        //'redo'
     ],
 
     fontNames: [
