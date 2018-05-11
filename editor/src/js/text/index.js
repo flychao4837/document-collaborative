@@ -169,22 +169,24 @@ Text.prototype = {
         })
     },
 
-    // 按回车键时的特殊处理
+    // 按回车键时的特殊处理 ,插入自定义文本，FireFox下光标没有定位到新增的<p class="section"><br></p>标签内
     _enterKeyHandle: function () {
         const editor = this.editor
         const $textElem = editor.$textElem
 
         function insertEmptyP ($selectionElem) {
-            const $p = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"><p class="section"><br></p></div>')
-            $p.insertBefore($selectionElem)
-            editor.selection.createRangeByElem($p, true)
+            const $div = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"></div>')
+            const $p = $('<p class="section"><br></p>')
+            $div.append($p)
+            $div.insertAfter($selectionElem)
+            editor.selection.createRangeByElem($div, true, true)
             editor.selection.restoreSelection()
             $selectionElem.remove()
         }
 
         // 将回车之后生成的非 <p> 的顶级标签，改为 <p>
         function pHandle(e) {
-            console.log(12)
+            console.log('pHandle')
             const $selectionElem = editor.selection.getSelectionContainerElem()
             const $parentElem = $selectionElem.parent()
 
@@ -192,27 +194,29 @@ Text.prototype = {
                 // 回车之前光标所在一个 <p><code>.....</code></p> ，忽然回车生成一个空的 <p><code><br></code></p>
                 // 而且继续回车跳不出去，因此只能特殊处理
                 insertEmptyP($selectionElem)
-                return
+                return false
             }
 
             if (!$parentElem.equal($textElem)) {
                 // 不是顶级标签
-                return
+                return false
             }
 
             const nodeName = $selectionElem.getNodeName()
             if (nodeName === 'P') {
                 // 当前的标签是 P ，不用做处理
-                return
+                return false
             }
 
             if ($selectionElem.text()) {
                 // 有内容，不做处理
-                return
+                return false
             }
 
             // 插入 <p> ，并将选取定位到 <p>，删除当前标签
             insertEmptyP($selectionElem)
+
+            return false
         }
 
         $textElem.on('keyup', e => {
@@ -230,6 +234,7 @@ Text.prototype = {
         // <pre><code></code></pre> 回车时 特殊处理
         // 插入自定义标签的新段落，用于处理jquery选取段落插入文本行为
         function codeHandle(e) {
+            console.log('codeHandle')
             const $selectionElem = editor.selection.getSelectionContainerElem()
             if (!$selectionElem) {
                 return
@@ -243,10 +248,13 @@ Text.prototype = {
 
             //在当前鼠标位置的根节点后插入新段落
             function insertEmptyPAfter ($selectionRootElem) {
-                const $p = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"><p class="section"><br></p></div>')
-                $p.insertAfter($selectionRootElem)
-                editor.selection.createRangeByElem($p, true)
+                const $div = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"></div>')
+                const $p = $('<p class="section"><br></p>')
+                $div.append($p)
+                $div.insertAfter($selectionRootElem)
+                editor.selection.createRangeByElem($div, true, true)
                 editor.selection.restoreSelection()
+
             }
             if (selectionNodeName !== 'CODE' || parentNodeName !== 'PRE') {
                 insertEmptyPAfter(originRootElem)
