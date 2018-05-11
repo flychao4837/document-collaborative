@@ -269,9 +269,11 @@ Text.prototype = {
             if (editor._willBreakCode === true) {
                 // 此时可以跳出代码块
                 // 插入 <p> ，并将选取定位到 <p>
-                const $p = $('<p>codeHandle<br></p>')
-                $p.insertAfter($parentElem)
-                editor.selection.createRangeByElem($p, true)
+                const $div = $('<div class="root-elem" data-root-id="'+editor.rootDomId++ +'"></div>')
+                const $p = $('<p class="section"><br></p>')
+                $div.append($p)
+                $div.insertAfter($parentElem)
+                editor.selection.createRangeByElem($div, true, true)
                 editor.selection.restoreSelection()
 
                 // 修改状态
