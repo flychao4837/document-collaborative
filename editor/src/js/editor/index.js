@@ -216,23 +216,27 @@ Editor.prototype = {
     initSelection: function (newLine) {
         const $textElem = this.$textElem
         const $children = $textElem.children()
+        const $last = $children.last()
         if (!$children.length) {
             // 如果编辑器区域无内容，添加一个空行，重新设置选区
-            $textElem.append($('<p>initSelection<br></p>'))
+            $textElem.append($('<div class="root-elem" data-root-id="'+this.rootDomId++ +'">initSelection<p class="section"><br></p></div>'))
             this.initSelection()
             return
+        }else{
+            return
         }
-
-        const $last = $children.last()
 
         if (newLine) {
             // 新增一个空行
             const html = $last.html().toLowerCase()
             const nodeName = $last.getNodeName()
+            if($children.length){
+                return
+            }
             //TODO -- 已经插入初始行，这里就不能再插入新行了
-            if ((html !== '<br>' && html !== '<br\/>') || nodeName !== 'P') {
+            if ((html !== '<br>' && html !== '<br\/>') || nodeName !== 'DIV') {
                 // 最后一个元素不是添加的自定义标签，添加一个空行，重新设置选区
-                $textElem.append($('<div class="root-elem" data-root-id="'+this.rootDomId++ +'"><p class="section"><br></p></div>'))
+                $textElem.append($('<div class="root-elem" data-root-id="'+this.rootDomId++ +'">initSelection<p class="section"><br></p></div>'))
                 this.initSelection()
                 return
             }
