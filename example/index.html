@@ -5,24 +5,16 @@
     <title>doc</title>
     <link rel="stylesheet" type="text/css" href="/lib/main.css">
 </head>
-<script type="text/javascript" src="/build/jquery.js"></script>
 <body>
-    <p>获取 JSON</p>
+    <p>基于Operation Transform</p>
     <div id="editor">
         <!-- <p>欢迎使用<b>Editor</b>富文本编辑器啊</p>
         <p><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_ca79a146.png" style="max-width:100%;"/></p> -->
     </div>
-    <button id="btn1">getJSON</button>
-    <button id="btn2">cleanHTML</button>
-    <button id="btn3">getCurrentRange</button>
-    <button id="btn4">setNewRange</button>
-    <!-- <p>元素文本字符长度168</p> -->
-    <div class="console"></div>
-    
+
     <!--Common based-->
     <script type="text/javascript" src="/lib/socket.io.js"></script>
     <script type="text/javascript" src="/build/Utils.js"></script>
-    <script type="text/javascript" src="/build/Constants.js"></script>
     <script type="text/javascript" src="/build/TextAction.js"></script>
     <script type="text/javascript" src="/build/TextOperation.js"></script>
     <script type="text/javascript" src="/build/Client.js"></script>
@@ -32,16 +24,15 @@
     <script type="text/javascript" src="/build/EntityManager.js"></script>
     <script type="text/javascript" src="/build/TextOperateHistroy.js"></script>   
     <script type="text/javascript" src="/build/ClientSocketIOAdapter.js"></script>
-    <script type="text/javascript" src="/build/RichTextCodeMirror.js"></script>
-    <script type="text/javascript" src="/build/RichTextCodeMirrorAdapter.js"></script>
+    <script type="text/javascript" src="/build/RichTextEditor.js"></script>
+    <script type="text/javascript" src="/build/RichTextEditorAdapter.js"></script>
     <script type="text/javascript" src="/build/EditorClient.js"></script>
     <!--custom-scripts-->
     <script type="text/javascript" src="/editor/release/wangEditor.js"></script>
     <script type="text/javascript" src="/build/togetherClient.js"></script>
 
     <script type="text/javascript">
-        var tc = new togetherClient("#editor" ,'http://192.168.10.30:4000')//for socket.io
-        //var tc = new togetherClient("#editor" ,'http://together.tt:4000')//for socket.io
+        var tc = new togetherClient("#editor" ,'http://together.tt:4000')//for socket.io
     </script>
 </body>
 </html>
