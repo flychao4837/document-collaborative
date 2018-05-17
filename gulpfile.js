@@ -20,7 +20,7 @@ gulp.task('serve', ['clean:build'], () => {
   runSequence(['build:scripts', 'build:css'])
   browserSync({
     port: 5000,
-    logPrefix: 'together',
+    logPrefix: 'SharedPen',
     server: {
       baseDir: './build'
     },
@@ -57,8 +57,8 @@ gulp.task('build', (cb) => {
 // bundle js/css
 gulp.task('bundle:scripts', () => {
   var bundles = [
-    { standalone: 'togetherClient', entry: 'lib/togetherClient.js' },
-    { standalone: 'togetherServer', entry: 'lib/togetherServer.js' }
+    { standalone: 'SharedPen', entry: 'lib/SharedPen.js' },
+    { standalone: 'SharedPenServer', entry: 'lib/SharedPenServer.js' }
   ]
   var tasks = bundles.map((bundle) => {
     return browserify(bundle.entry, { standalone: bundle.standalone })
@@ -80,10 +80,10 @@ gulp.task('bundle:scripts', () => {
 })
 
 gulp.task('bundle:css', () => {
-  return gulp.src('lib/main.css')
+  return gulp.src('lib/SharedPen.css')
     .pipe(cleanCSS())
     .pipe(rename({
-      basename: 'together'
+      basename: 'sharedpen'
     }))
     .pipe(gulp.dest('dist/'))
 })

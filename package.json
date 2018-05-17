@@ -1,14 +1,35 @@
 {
-  "name": "doc-together",
+  "name": "sharedpen",
   "version": "0.0.1",
-  "description": "编辑器文本协同",
-  "main": "./server.js",
+  "description": "A real time collaborative editor using CodeMirror and ot.js",
+  "main": "index.js",
   "scripts": {
-    "test": "example",
-    "start": "node server.js"
+    "fix": "standard --fix lib/*.js examples/server.js gulpfile.js",
+    "test": "standard lib/*.js examples/server.js gulpfile.js",
+    "build": "gulp build",
+    "bundle": "gulp"
   },
-  "author": "yangchao",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YingshanDeng/SharedPen.git"
+  },
+  "keywords": [
+    "collaborative",
+    "editor",
+    "CodeMirror",
+    "ot.js"
+  ],
+  "author": "YingshanDeng <yingshandeng@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YingshanDeng/SharedPen/issues"
+  },
+  "homepage": "https://github.com/YingshanDeng/SharedPen#readme",
+  "dependencies": {
+    "codemirror": "^5.32.0",
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
@@ -19,7 +40,6 @@
     "cors": "^2.8.4",
     "del": "^3.0.0",
     "event-stream": "^3.3.4",
-    "express": "^4.16.3",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
     "gulp-cached": "^1.1.1",
@@ -27,14 +47,9 @@
     "gulp-gzip": "^1.4.1",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
-    "require": "^2.4.20",
     "run-sequence": "^2.2.0",
     "standard": "^10.0.3",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "ws": "^5.1.1"
-  },
-  "dependencies": {
-    "socket.io": "^2.1.0"
+    "vinyl-source-stream": "^1.1.0"
   }
 }
