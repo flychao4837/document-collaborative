@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SharedPen
 A real time collaborative editor using CodeMirror and ot.js.
 ![](http://7vikhl.com1.z0.glb.clouddn.com/sharedpen.png)
@@ -60,3 +61,7 @@ yarn build
 
 ## License
 MIT
+=======
+# document-collaborative
+基于富文本编辑器的文档协同操作--TODO
+>>>>>>> 7acc4bcb4b445dd67404bc8673b13627dfb87329
