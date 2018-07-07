@@ -10,7 +10,7 @@ http.listen(4000, function () {
 })
 
 var EditorSocketIOServer = require('./build/SharedPenServer.js')
-var documents = '<div class="root-elem" data-root-id="1"><p class="section"><br></p></div><div class="root-elem" data-root-id="2"><p class="section"><br></p></div>'
+var documents = '<div class="root-elem" data-root-id="1"><p class="section"><br></p></div>'
 var server = new EditorSocketIOServer(documents, [], 1) //document, operations, docId, mayWrite
 
 io.on('connection', function (socket) {
